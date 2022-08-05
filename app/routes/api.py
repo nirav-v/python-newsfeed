@@ -1,5 +1,5 @@
 import sys
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from app.models import User
 from app.db import get_db
 
@@ -26,7 +26,11 @@ def signup():
         print(sys.exc_info()[0])
 
     # insert failed, so rollback and send error to front end
-    db.rollback()
-    return jsonify(message='Signup failed'), 500
+        db.rollback()
+        return jsonify(message='Signup failed'), 500
+
+    session.clear()
+    session['user_id'] = newUser.id
+    session['loggedIn'] = True
 
     return jsonify(id=newUser.id)
